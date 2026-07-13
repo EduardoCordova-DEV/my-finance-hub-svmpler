@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as CategoriesRouteImport } from './routes/categories'
@@ -21,6 +22,11 @@ import { Route as OnboardingExpensesRouteImport } from './routes/onboarding.expe
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/categories': typeof CategoriesRoute
   '/history': typeof HistoryRoute
   '/profile': typeof ProfileRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/welcome': typeof WelcomeRoute
   '/onboarding/expenses': typeof OnboardingExpensesRoute
   '/onboarding/income': typeof OnboardingIncomeRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/categories': typeof CategoriesRoute
   '/history': typeof HistoryRoute
   '/profile': typeof ProfileRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/welcome': typeof WelcomeRoute
   '/onboarding/expenses': typeof OnboardingExpensesRoute
   '/onboarding/income': typeof OnboardingIncomeRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/categories': typeof CategoriesRoute
   '/history': typeof HistoryRoute
   '/profile': typeof ProfileRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/welcome': typeof WelcomeRoute
   '/onboarding/expenses': typeof OnboardingExpensesRoute
   '/onboarding/income': typeof OnboardingIncomeRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/history'
     | '/profile'
+    | '/sitemap.xml'
     | '/welcome'
     | '/onboarding/expenses'
     | '/onboarding/income'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/history'
     | '/profile'
+    | '/sitemap.xml'
     | '/welcome'
     | '/onboarding/expenses'
     | '/onboarding/income'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/history'
     | '/profile'
+    | '/sitemap.xml'
     | '/welcome'
     | '/onboarding/expenses'
     | '/onboarding/income'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   CategoriesRoute: typeof CategoriesRoute
   HistoryRoute: typeof HistoryRoute
   ProfileRoute: typeof ProfileRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   WelcomeRoute: typeof WelcomeRoute
   OnboardingExpensesRoute: typeof OnboardingExpensesRoute
   OnboardingIncomeRoute: typeof OnboardingIncomeRoute
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/welcome'
       fullPath: '/welcome'
       preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   CategoriesRoute: CategoriesRoute,
   HistoryRoute: HistoryRoute,
   ProfileRoute: ProfileRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   WelcomeRoute: WelcomeRoute,
   OnboardingExpensesRoute: OnboardingExpensesRoute,
   OnboardingIncomeRoute: OnboardingIncomeRoute,
@@ -208,3 +229,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
