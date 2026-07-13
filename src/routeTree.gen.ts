@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OnboardingIncomeRouteImport } from './routes/onboarding.income'
@@ -24,6 +25,11 @@ const WelcomeRoute = WelcomeRouteImport.update({
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriesRoute = CategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -50,6 +56,7 @@ const OnboardingExpensesRoute = OnboardingExpensesRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/categories': typeof CategoriesRoute
   '/history': typeof HistoryRoute
   '/welcome': typeof WelcomeRoute
   '/onboarding/expenses': typeof OnboardingExpensesRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/categories': typeof CategoriesRoute
   '/history': typeof HistoryRoute
   '/welcome': typeof WelcomeRoute
   '/onboarding/expenses': typeof OnboardingExpensesRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/categories': typeof CategoriesRoute
   '/history': typeof HistoryRoute
   '/welcome': typeof WelcomeRoute
   '/onboarding/expenses': typeof OnboardingExpensesRoute
@@ -77,6 +86,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/categories'
     | '/history'
     | '/welcome'
     | '/onboarding/expenses'
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/categories'
     | '/history'
     | '/welcome'
     | '/onboarding/expenses'
@@ -93,6 +104,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
+    | '/categories'
     | '/history'
     | '/welcome'
     | '/onboarding/expenses'
@@ -102,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  CategoriesRoute: typeof CategoriesRoute
   HistoryRoute: typeof HistoryRoute
   WelcomeRoute: typeof WelcomeRoute
   OnboardingExpensesRoute: typeof OnboardingExpensesRoute
@@ -122,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categories': {
+      id: '/categories'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof CategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -158,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  CategoriesRoute: CategoriesRoute,
   HistoryRoute: HistoryRoute,
   WelcomeRoute: WelcomeRoute,
   OnboardingExpensesRoute: OnboardingExpensesRoute,
