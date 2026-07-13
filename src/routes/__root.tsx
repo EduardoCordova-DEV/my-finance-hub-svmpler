@@ -77,11 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "MyFinance — Tus finanzas personales" },
+      {
+        name: "description",
+        content:
+          "MyFinance te ayuda a llevar el control de tus ingresos, gastos fijos y variables con una vista simple de tu salud financiera.",
+      },
+      { name: "author", content: "MyFinance" },
+      { property: "og:title", content: "MyFinance — Tus finanzas personales" },
+      {
+        property: "og:description",
+        content: "Controla ingresos y gastos, y visualiza tu salud financiera.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
