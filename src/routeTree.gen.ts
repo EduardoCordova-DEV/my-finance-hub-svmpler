@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -20,6 +21,11 @@ import { Route as OnboardingExpensesRouteImport } from './routes/onboarding.expe
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoryRoute = HistoryRouteImport.update({
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/categories': typeof CategoriesRoute
   '/history': typeof HistoryRoute
+  '/profile': typeof ProfileRoute
   '/welcome': typeof WelcomeRoute
   '/onboarding/expenses': typeof OnboardingExpensesRoute
   '/onboarding/income': typeof OnboardingIncomeRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/categories': typeof CategoriesRoute
   '/history': typeof HistoryRoute
+  '/profile': typeof ProfileRoute
   '/welcome': typeof WelcomeRoute
   '/onboarding/expenses': typeof OnboardingExpensesRoute
   '/onboarding/income': typeof OnboardingIncomeRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/categories': typeof CategoriesRoute
   '/history': typeof HistoryRoute
+  '/profile': typeof ProfileRoute
   '/welcome': typeof WelcomeRoute
   '/onboarding/expenses': typeof OnboardingExpensesRoute
   '/onboarding/income': typeof OnboardingIncomeRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/categories'
     | '/history'
+    | '/profile'
     | '/welcome'
     | '/onboarding/expenses'
     | '/onboarding/income'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/categories'
     | '/history'
+    | '/profile'
     | '/welcome'
     | '/onboarding/expenses'
     | '/onboarding/income'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/categories'
     | '/history'
+    | '/profile'
     | '/welcome'
     | '/onboarding/expenses'
     | '/onboarding/income'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CategoriesRoute: typeof CategoriesRoute
   HistoryRoute: typeof HistoryRoute
+  ProfileRoute: typeof ProfileRoute
   WelcomeRoute: typeof WelcomeRoute
   OnboardingExpensesRoute: typeof OnboardingExpensesRoute
   OnboardingIncomeRoute: typeof OnboardingIncomeRoute
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/welcome'
       fullPath: '/welcome'
       preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/history': {
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CategoriesRoute: CategoriesRoute,
   HistoryRoute: HistoryRoute,
+  ProfileRoute: ProfileRoute,
   WelcomeRoute: WelcomeRoute,
   OnboardingExpensesRoute: OnboardingExpensesRoute,
   OnboardingIncomeRoute: OnboardingIncomeRoute,
