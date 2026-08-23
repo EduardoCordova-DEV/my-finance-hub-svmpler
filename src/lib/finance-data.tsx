@@ -1,32 +1,100 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 
-export type CategoryKey =
+export type CategoryKey = string;
+
+export type IconKey =
   | "vivienda"
   | "transporte"
   | "comida"
   | "ocio"
   | "servicios"
   | "suscripciones"
-  | "otros";
+  | "otros"
+  | "mascota"
+  | "salud"
+  | "educacion"
+  | "regalo"
+  | "viajes"
+  | "deportes"
+  | "hogar"
+  | "tecnologia"
+  | "hijos"
+  | "belleza"
+  | "seguro"
+  | "ahorro"
+  | "trabajo";
 
 export interface CategoryDef {
   key: CategoryKey;
   name: string;
   color: string;
   tint: string;
+  icon: IconKey;
+  custom?: boolean;
 }
 
-export const CATEGORIES: Record<CategoryKey, CategoryDef> = {
-  vivienda: { key: "vivienda", name: "Vivienda", color: "#D4537E", tint: "#4B1528" },
-  transporte: { key: "transporte", name: "Transporte", color: "#7F77DD", tint: "#26215C" },
-  comida: { key: "comida", name: "Comida", color: "#EF9F27", tint: "#412402" },
-  ocio: { key: "ocio", name: "Ocio", color: "#5DCAA5", tint: "#04342C" },
-  servicios: { key: "servicios", name: "Servicios", color: "#378ADD", tint: "#042C53" },
-  suscripciones: { key: "suscripciones", name: "Suscripciones", color: "#D85A30", tint: "#4A1B0C" },
-  otros: { key: "otros", name: "Otros", color: "#888780", tint: "#2C2C2A" },
-};
+/** Colores sugeridos para categorías personalizadas (no usados por las base). */
+export const CUSTOM_COLORS = [
+  "#C9509E",
+  "#4FA8E8",
+  "#8AC249",
+  "#E8B84B",
+  "#E8654B",
+  "#6FCF97",
+  "#B084E8",
+  "#E894B8",
+];
 
-export const CATEGORY_LIST: CategoryDef[] = Object.values(CATEGORIES);
+/** Genera un tinte oscuro/desaturado a partir del color base. */
+export function tintFromColor(hex: string) {
+  const h = hex.replace("#", "");
+  const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
+  const r = parseInt(full.slice(0, 2), 16);
+  const g = parseInt(full.slice(2, 4), 16);
+  const b = parseInt(full.slice(4, 6), 16);
+  const lum = (r + g + b) / 3;
+  const mix = (c: number) => Math.round(Math.max(0, Math.min(255, (c * 0.75 + lum * 0.25) * 0.33)));
+  return (
+    "#" +
+    [mix(r), mix(g), mix(b)].map((c) => c.toString(16).padStart(2, "0")).join("")
+  );
+}
+
+const BASE_CATEGORIES: CategoryDef[] = [
+  { key: "vivienda", name: "Vivienda", color: "#D4537E", tint: "#4B1528", icon: "vivienda" },
+  { key: "transporte", name: "Transporte", color: "#7F77DD", tint: "#26215C", icon: "transporte" },
+  { key: "comida", name: "Comida", color: "#EF9F27", tint: "#412402", icon: "comida" },
+  { key: "ocio", name: "Ocio", color: "#5DCAA5", tint: "#04342C", icon: "ocio" },
+  { key: "servicios", name: "Servicios", color: "#378ADD", tint: "#042C53", icon: "servicios" },
+  {
+    key: "suscripciones",
+    name: "Suscripciones",
+    color: "#D85A30",
+    tint: "#4A1B0C",
+    icon: "suscripciones",
+  },
+  { key: "otros", name: "Otros", color: "#888780", tint: "#2C2C2A", icon: "otros" },
+];
+
+const MOCK_CUSTOM: CategoryDef[] = [
+  {
+    key: "mascota",
+    name: "Mascota",
+    color: "#8AC249",
+    tint: tintFromColor("#8AC249"),
+    icon: "mascota",
+    custom: true,
+  },
+];
+
+export const DEFAULT_CATEGORIES: CategoryDef[] = [...BASE_CATEGORIES, ...MOCK_CUSTOM];
+
+/** Fallback estático (solo para lecturas fuera del provider). */
+export const CATEGORIES: Record<CategoryKey, CategoryDef> = Object.fromEntries(
+  DEFAULT_CATEGORIES.map((c) => [c.key, c]),
+);
+
+export const CATEGORY_LIST: CategoryDef[] = DEFAULT_CATEGORIES;
 
 export type PeriodType = "quincenal" | "mensual";
 
@@ -59,6 +127,12 @@ interface FinanceState {
   user: UserProfile;
   fixedExpenses: FixedExpense[];
   transactions: Transaction[];
+  categories: CategoryDef[];
+  categoryMap: Record<CategoryKey, CategoryDef>;
+  getCategory: (key: CategoryKey) => CategoryDef;
+  addCategory: (c: { name: string; color: string; icon: IconKey }) => CategoryKey;
+  updateCategory: (key: CategoryKey, c: { name: string; color: string; icon: IconKey }) => void;
+  deleteCategory: (key: CategoryKey) => void;
   setUser: (u: Partial<UserProfile>) => void;
   setFixedExpenses: (list: FixedExpense[]) => void;
   addTransaction: (t: Omit<Transaction, "id" | "date"> & { date?: string }) => void;
@@ -89,9 +163,22 @@ const initialTx: Transaction[] = [
   { id: "t4", type: "gasto", name: "Súper Chedraui", category: "comida", amount: 587, date: today(2) },
   { id: "t5", type: "gasto", name: "Spotify", category: "suscripciones", amount: 115, date: today(3) },
   { id: "t6", type: "ingreso", name: "Freelance diseño", category: "otros", amount: 1500, date: today(4) },
+  { id: "t7", type: "gasto", name: "Croquetas Firulais", category: "mascota", amount: 420, date: today(1) },
+  { id: "t8", type: "gasto", name: "Veterinario", category: "mascota", amount: 650, date: today(3) },
 ];
 
 const FinanceCtx = createContext<FinanceState | null>(null);
+
+function slugify(name: string) {
+  return (
+    name
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "cat"
+  );
+}
 
 export function FinanceProvider({ children }: { children: ReactNode }) {
   const [user, setUserState] = useState<UserProfile>({
@@ -102,12 +189,48 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   });
   const [fixedExpenses, setFixedExpenses] = useState<FixedExpense[]>(initialFixed);
   const [transactions, setTransactions] = useState<Transaction[]>(initialTx);
+  const [categories, setCategories] = useState<CategoryDef[]>(DEFAULT_CATEGORIES);
 
-  const value = useMemo<FinanceState>(
-    () => ({
+  const value = useMemo<FinanceState>(() => {
+    const categoryMap = Object.fromEntries(categories.map((c) => [c.key, c])) as Record<
+      CategoryKey,
+      CategoryDef
+    >;
+    const fallback: CategoryDef = categoryMap["otros"] ?? BASE_CATEGORIES[6];
+
+    return {
       user,
       fixedExpenses,
       transactions,
+      categories,
+      categoryMap,
+      getCategory: (key) => categoryMap[key] ?? fallback,
+      addCategory: ({ name, color, icon }) => {
+        const base = slugify(name);
+        let key = base;
+        let i = 2;
+        while (categories.some((c) => c.key === key)) key = `${base}-${i++}`;
+        setCategories((prev) => [
+          ...prev,
+          { key, name, color, tint: tintFromColor(color), icon, custom: true },
+        ]);
+        return key;
+      },
+      updateCategory: (key, { name, color, icon }) =>
+        setCategories((prev) =>
+          prev.map((c) =>
+            c.key === key ? { ...c, name, color, tint: tintFromColor(color), icon } : c,
+          ),
+        ),
+      deleteCategory: (key) => {
+        setCategories((prev) => prev.filter((c) => c.key !== key));
+        setTransactions((prev) =>
+          prev.map((t) => (t.category === key ? { ...t, category: "otros" } : t)),
+        );
+        setFixedExpenses((prev) =>
+          prev.map((f) => (f.category === key ? { ...f, category: "otros" } : f)),
+        );
+      },
       setUser: (u) => setUserState((prev) => ({ ...prev, ...u })),
       setFixedExpenses,
       addTransaction: (t) =>
@@ -115,9 +238,8 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
           { id: Math.random().toString(36).slice(2), date: t.date ?? new Date().toISOString(), ...t },
           ...prev,
         ]),
-    }),
-    [user, fixedExpenses, transactions],
-  );
+    };
+  }, [user, fixedExpenses, transactions, categories]);
 
   return <FinanceCtx.Provider value={value}>{children}</FinanceCtx.Provider>;
 }
