@@ -1,11 +1,37 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { LogOut } from "lucide-react";
+import { LogOut, CalendarDays, ChevronRight } from "lucide-react";
 import { AppShell } from "@/components/finance/AppShell";
-import { useFinance, type PeriodType } from "@/lib/finance-data";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { formatMXN, useFinance, type PeriodType } from "@/lib/finance-data";
 
 export const Route = createFileRoute("/profile")({
-  head: () => ({ meta: [{ title: "Perfil · MyFinance" }] }),
+  head: () => ({
+    meta: [
+      { title: "Perfil y ajustes · MyFinance" },
+      {
+        name: "description",
+        content: "Edita tu ingreso, cambia entre presupuesto quincenal o mensual y cierra sesión.",
+      },
+      { property: "og:title", content: "Perfil y ajustes · MyFinance" },
+      {
+        property: "og:description",
+        content: "Ajusta tu ingreso y el tipo de período de tu presupuesto en MyFinance.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Profile,
 });
 
@@ -14,11 +40,27 @@ function Profile() {
   const { user, setUser } = useFinance();
   const [income, setIncome] = useState(String(user.income));
   const [period, setPeriod] = useState<PeriodType>(user.period);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  function save() {
-    const n = parseFloat(income);
-    if (!n) return;
-    setUser({ income: n, period });
+  const parsed = parseFloat(income);
+  const periodChanged = period !== user.period;
+  const incomeChanged = !!parsed && parsed !== user.income;
+
+  function apply() {
+    if (!parsed) return;
+    setUser({ income: parsed, period });
+    toast.success("Presupuesto actualizado", {
+      description: `${period === "quincenal" ? "Quincenal" : "Mensual"} · ${formatMXN(parsed)}`,
+    });
+  }
+
+  function handleSave() {
+    if (!parsed) return;
+    if (periodChanged) {
+      setConfirmOpen(true);
+      return;
+    }
+    apply();
   }
 
   const initials = user.name
@@ -77,6 +119,11 @@ function Profile() {
               </button>
             ))}
           </div>
+          {periodChanged ? (
+            <p className="mt-2 text-xs" style={{ color: "#EF9F27" }}>
+              Cambiarás de {user.period} a {period}. Te pediremos confirmación al guardar.
+            </p>
+          ) : null}
         </div>
 
         <div>
@@ -99,12 +146,28 @@ function Profile() {
 
         <button
           type="button"
-          onClick={save}
-          className="w-full rounded-full bg-white py-3 text-sm font-medium text-black transition-opacity active:opacity-80"
+          onClick={handleSave}
+          disabled={!parsed || (!periodChanged && !incomeChanged)}
+          className="w-full rounded-full bg-white py-3 text-sm font-medium text-black transition-opacity active:opacity-80 disabled:opacity-30"
         >
           Guardar cambios
         </button>
       </section>
+
+      <Link
+        to="/calendar"
+        className="mb-5 flex items-center gap-3 rounded-2xl p-4"
+        style={{ backgroundColor: "var(--card)" }}
+      >
+        <CalendarDays size={20} color="#1D9E75" strokeWidth={1.75} />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm text-foreground">Calendario de registros</p>
+          <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+            Compara tus gastos mes con mes
+          </p>
+        </div>
+        <ChevronRight size={16} color="#7A7A74" />
+      </Link>
 
       <button
         type="button"
@@ -114,6 +177,34 @@ function Profile() {
       >
         <LogOut size={16} /> Cerrar sesión
       </button>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent
+          className="mx-auto max-w-[360px] rounded-2xl border"
+          style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}
+        >
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-base font-medium">
+              ¿Cambiar a presupuesto {period}?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Tu ingreso pasará a {formatMXN(parsed || 0)} {period}. Se recalcularán el disponible,
+              los días restantes y los porcentajes de tus gastos.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              className="rounded-full"
+              onClick={() => setPeriod(user.period)}
+            >
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction className="rounded-full" onClick={apply}>
+              Sí, cambiar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppShell>
   );
 }
