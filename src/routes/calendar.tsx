@@ -235,7 +235,7 @@ function CalendarPage() {
         <h2 className="mb-4 text-sm font-medium text-foreground">Comparativa por mes</h2>
         <div className="flex h-32 items-end gap-2">
           {trend.map((m) => (
-            <div key={m.key} className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
+            <div key={m.key} className="flex h-full min-w-0 flex-1 flex-col items-center gap-1.5">
               <div className="flex w-full flex-1 items-end">
                 <div
                   className="w-full rounded-t-md transition-all"

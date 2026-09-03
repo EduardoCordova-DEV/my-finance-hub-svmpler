@@ -165,6 +165,16 @@ const initialTx: Transaction[] = [
   { id: "t6", type: "ingreso", name: "Freelance diseño", category: "otros", amount: 1500, date: today(4) },
   { id: "t7", type: "gasto", name: "Croquetas Firulais", category: "mascota", amount: 420, date: today(1) },
   { id: "t8", type: "gasto", name: "Veterinario", category: "mascota", amount: 650, date: today(3) },
+  // Meses anteriores (para el calendario y la comparativa mensual)
+  { id: "p1", type: "gasto", name: "Renta", category: "vivienda", amount: 4000, date: today(32) },
+  { id: "p2", type: "gasto", name: "Despensa mensual", category: "comida", amount: 1420, date: today(34) },
+  { id: "p3", type: "gasto", name: "Gasolina", category: "transporte", amount: 780, date: today(38) },
+  { id: "p4", type: "gasto", name: "Estética Firulais", category: "mascota", amount: 350, date: today(40) },
+  { id: "p5", type: "ingreso", name: "Sueldo", category: "otros", amount: 8500, date: today(45) },
+  { id: "p6", type: "gasto", name: "Renta", category: "vivienda", amount: 4000, date: today(62) },
+  { id: "p7", type: "gasto", name: "Concierto", category: "ocio", amount: 1250, date: today(66) },
+  { id: "p8", type: "gasto", name: "Súper", category: "comida", amount: 990, date: today(70) },
+  { id: "p9", type: "gasto", name: "Internet", category: "servicios", amount: 499, date: today(73) },
 ];
 
 const FinanceCtx = createContext<FinanceState | null>(null);

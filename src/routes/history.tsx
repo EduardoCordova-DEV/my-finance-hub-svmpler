@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import { AppShell } from "@/components/finance/AppShell";
 import { CategoryIcon } from "@/components/finance/CategoryIcon";
 import {
-  CATEGORY_LIST,
   formatMXN,
   relativeDate,
   useFinance,
@@ -11,12 +10,27 @@ import {
 } from "@/lib/finance-data";
 
 export const Route = createFileRoute("/history")({
-  head: () => ({ meta: [{ title: "Historial · MyFinance" }] }),
+  head: () => ({
+    meta: [
+      { title: "Historial de movimientos · MyFinance" },
+      {
+        name: "description",
+        content: "Consulta todos tus movimientos y fíltralos por categoría, incluidas las personalizadas.",
+      },
+      { property: "og:title", content: "Historial de movimientos · MyFinance" },
+      {
+        property: "og:description",
+        content: "Filtra tus gastos e ingresos por categoría en MyFinance.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: History,
 });
 
 function History() {
-  const { transactions } = useFinance();
+  const { transactions, categories } = useFinance();
   const [filter, setFilter] = useState<CategoryKey | "todas">("todas");
 
   const filtered = useMemo(() => {
@@ -33,7 +47,7 @@ function History() {
         <Chip active={filter === "todas"} onClick={() => setFilter("todas")}>
           Todas
         </Chip>
-        {CATEGORY_LIST.map((c) => (
+        {categories.map((c) => (
           <Chip key={c.key} active={filter === c.key} onClick={() => setFilter(c.key)} color={c.color}>
             {c.name}
           </Chip>

@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, CalendarDays } from "lucide-react";
 import { AppShell } from "@/components/finance/AppShell";
 import { CategoryIcon } from "@/components/finance/CategoryIcon";
 import {
-  CATEGORIES,
   formatMXN,
   periodInfo,
   relativeDate,
@@ -31,7 +30,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const { user, fixedExpenses, transactions } = useFinance();
+  const { user, fixedExpenses, transactions, getCategory } = useFinance();
   const period = periodInfo(user.period);
 
   const totalFixed = fixedExpenses.reduce((s, f) => s + f.amount, 0);
@@ -51,10 +50,24 @@ function Dashboard() {
       catTotals.set(e.category, (catTotals.get(e.category) ?? 0) + e.amount);
     },
   );
-  const donutData = Array.from(catTotals.entries())
-    .map(([key, value]) => ({ key, value, def: CATEGORIES[key] }))
+  const rawDonut = Array.from(catTotals.entries())
+    .map(([key, value]) => ({ key, value, def: getCategory(key) }))
     .sort((a, b) => b.value - a.value);
-  const donutTotal = donutData.reduce((s, d) => s + d.value, 0) || 1;
+  const donutTotal = rawDonut.reduce((s, d) => s + d.value, 0) || 1;
+
+  // Agrupa las categorías menores al 3% del gasto total bajo "Otros"
+  const otrosDef = getCategory("otros");
+  const small = rawDonut.filter((d) => d.key !== "otros" && d.value / donutTotal < 0.03);
+  const donutData = [
+    ...rawDonut.filter((d) => !small.some((s) => s.key === d.key)),
+  ];
+  if (small.length > 0) {
+    const extra = small.reduce((s, d) => s + d.value, 0);
+    const existing = donutData.find((d) => d.key === "otros");
+    if (existing) existing.value += extra;
+    else donutData.push({ key: "otros", value: extra, def: otrosDef });
+    donutData.sort((a, b) => b.value - a.value);
+  }
 
   const initials = user.name
     .split(" ")
@@ -113,6 +126,21 @@ function Dashboard() {
         <MiniStat label="Gastos variables" value={totalVariable} />
       </section>
 
+      <Link
+        to="/calendar"
+        className="mb-4 flex items-center gap-3 rounded-2xl p-4"
+        style={{ backgroundColor: "var(--card)" }}
+      >
+        <CalendarDays size={20} color="#1D9E75" strokeWidth={1.75} />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm text-foreground">Calendario de registros</p>
+          <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+            Compara tus gastos mes con mes
+          </p>
+        </div>
+        <ChevronRight size={16} color="#7A7A74" />
+      </Link>
+
       {/* Category donut */}
       <section
         className="mb-4 rounded-2xl p-5"
@@ -147,7 +175,7 @@ function Dashboard() {
               </ResponsiveContainer>
             </div>
             <ul className="min-w-0 flex-1 space-y-2">
-              {donutData.slice(0, 5).map((d) => (
+              {donutData.slice(0, 6).map((d) => (
                 <li key={d.key} className="flex items-center gap-2 text-xs">
                   <span
                     className="h-2 w-2 shrink-0 rounded-full"
@@ -188,7 +216,7 @@ function Dashboard() {
                 <CategoryIcon category={t.category} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm text-foreground">{t.name}</p>
-                  <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                  <p className="text-xs" suppressHydrationWarning style={{ color: "var(--text-tertiary)" }}>
                     {relativeDate(t.date)}
                   </p>
                 </div>
