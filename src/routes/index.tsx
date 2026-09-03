@@ -50,10 +50,24 @@ function Dashboard() {
       catTotals.set(e.category, (catTotals.get(e.category) ?? 0) + e.amount);
     },
   );
-  const donutData = Array.from(catTotals.entries())
-    .map(([key, value]) => ({ key, value, def: CATEGORIES[key] }))
+  const rawDonut = Array.from(catTotals.entries())
+    .map(([key, value]) => ({ key, value, def: getCategory(key) }))
     .sort((a, b) => b.value - a.value);
-  const donutTotal = donutData.reduce((s, d) => s + d.value, 0) || 1;
+  const donutTotal = rawDonut.reduce((s, d) => s + d.value, 0) || 1;
+
+  // Agrupa las categorías menores al 3% del gasto total bajo "Otros"
+  const otrosDef = getCategory("otros");
+  const small = rawDonut.filter((d) => d.key !== "otros" && d.value / donutTotal < 0.03);
+  const donutData = [
+    ...rawDonut.filter((d) => !small.some((s) => s.key === d.key)),
+  ];
+  if (small.length > 0) {
+    const extra = small.reduce((s, d) => s + d.value, 0);
+    const existing = donutData.find((d) => d.key === "otros");
+    if (existing) existing.value += extra;
+    else donutData.push({ key: "otros", value: extra, def: otrosDef });
+    donutData.sort((a, b) => b.value - a.value);
+  }
 
   const initials = user.name
     .split(" ")
