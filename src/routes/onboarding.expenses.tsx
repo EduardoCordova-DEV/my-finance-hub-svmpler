@@ -11,7 +11,7 @@ export const Route = createFileRoute("/onboarding/expenses")({
 
 function ExpensesPage() {
   const navigate = useNavigate();
-  const { fixedExpenses, setFixedExpenses } = useFinance();
+  const { fixedExpenses, setFixedExpenses, categories } = useFinance();
   const [items, setItems] = useState<FixedExpense[]>(fixedExpenses);
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
@@ -66,7 +66,7 @@ function ExpensesPage() {
               className="rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
               style={{ backgroundColor: "var(--card-elevated)" }}
             >
-              {CATEGORY_LIST.map((c) => (
+              {categories.map((c) => (
                 <option key={c.key} value={c.key}>
                   {c.name}
                 </option>
