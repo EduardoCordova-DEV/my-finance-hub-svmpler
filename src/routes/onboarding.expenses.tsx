@@ -1,12 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Trash2, Plus } from "lucide-react";
-import {
-  CATEGORY_LIST,
-  useFinance,
-  type CategoryKey,
-  type FixedExpense,
-} from "@/lib/finance-data";
+import { useFinance, type CategoryKey, type FixedExpense } from "@/lib/finance-data";
 import { CategoryIcon } from "@/components/finance/CategoryIcon";
 
 export const Route = createFileRoute("/onboarding/expenses")({
