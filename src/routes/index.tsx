@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, CalendarDays } from "lucide-react";
 import { AppShell } from "@/components/finance/AppShell";
 import { CategoryIcon } from "@/components/finance/CategoryIcon";
 import {
-  CATEGORIES,
   formatMXN,
   periodInfo,
   relativeDate,
@@ -31,7 +30,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const { user, fixedExpenses, transactions } = useFinance();
+  const { user, fixedExpenses, transactions, getCategory } = useFinance();
   const period = periodInfo(user.period);
 
   const totalFixed = fixedExpenses.reduce((s, f) => s + f.amount, 0);
