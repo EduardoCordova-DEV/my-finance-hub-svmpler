@@ -25,16 +25,16 @@ import {
 export const Route = createFileRoute("/categories")({
   head: () => ({
     meta: [
-      { title: "Gastos fijos y categorías · MyFinance" },
+      { title: "Gastos Fijos · MyFinance" },
       {
         name: "description",
         content:
           "Edita tus gastos fijos recurrentes y crea categorías personalizadas con color e ícono propios.",
       },
-      { property: "og:title", content: "Gastos fijos y categorías · MyFinance" },
+      { property: "og:title", content: "Gastos Fijos · MyFinance" },
       {
         property: "og:description",
-        content: "Administra gastos fijos y categorías personalizadas en MyFinance.",
+        content: "Administra tus gastos fijos recurrentes y categorías personalizadas en MyFinance.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

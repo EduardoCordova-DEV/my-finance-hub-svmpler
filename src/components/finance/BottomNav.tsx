@@ -13,7 +13,7 @@ const TABS_LEFT: TabDef[] = [
   { to: "/history", label: "Historial", Icon: List },
 ];
 const TABS_RIGHT: TabDef[] = [
-  { to: "/categories", label: "Categorías", Icon: LayoutGrid },
+  { to: "/categories", label: "Gastos Fijos", Icon: LayoutGrid },
   { to: "/profile", label: "Perfil", Icon: User },
 ];
 
@@ -64,7 +64,7 @@ const SIDE_TABS: TabDef[] = [
   { to: "/", label: "Home", Icon: Home },
   { to: "/history", label: "Historial", Icon: List },
   { to: "/calendar", label: "Calendario", Icon: CalendarDays },
-  { to: "/categories", label: "Categorías", Icon: LayoutGrid },
+  { to: "/categories", label: "Gastos Fijos", Icon: LayoutGrid },
   { to: "/profile", label: "Perfil", Icon: User },
 ];
 
