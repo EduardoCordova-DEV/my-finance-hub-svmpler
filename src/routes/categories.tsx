@@ -51,6 +51,7 @@ function CategoriesPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editing, setEditing] = useState<CategoryDef | null>(null);
   const [pendingDelete, setPendingDelete] = useState<CategoryDef | null>(null);
+  const [editingFixedId, setEditingFixedId] = useState<string | null>(null);
 
   const customCategories = categories.filter((c) => c.custom);
 
@@ -63,9 +64,25 @@ function CategoriesPage() {
     );
   }, [pendingDelete, transactions, fixedExpenses]);
 
+  function resetForm() {
+    setEditingFixedId(null);
+    setName("");
+    setAmount("");
+    setCategory("otros");
+  }
+
   function add() {
     const n = parseFloat(amount);
     if (!name.trim() || !n) return;
+    if (editingFixedId) {
+      setFixedExpenses(
+        fixedExpenses.map((f) =>
+          f.id === editingFixedId ? { ...f, name: name.trim(), amount: n, category } : f,
+        ),
+      );
+      resetForm();
+      return;
+    }
     const item: FixedExpense = {
       id: Math.random().toString(36).slice(2),
       name: name.trim(),
@@ -75,6 +92,13 @@ function CategoriesPage() {
     setFixedExpenses([...fixedExpenses, item]);
     setName("");
     setAmount("");
+  }
+
+  function startEdit(f: FixedExpense) {
+    setEditingFixedId(f.id);
+    setName(f.name);
+    setAmount(String(f.amount));
+    setCategory(f.category);
   }
 
   function remove(id: string) {
