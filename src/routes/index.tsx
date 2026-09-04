@@ -79,14 +79,14 @@ function Dashboard() {
   const recent = transactions.slice(0, 6);
 
   return (
-    <AppShell>
+    <AppShell wide>
       {/* Header */}
-      <header className="mb-6 flex items-center justify-between">
+      <header className="mb-6 flex items-center justify-between md:mb-8">
         <div>
           <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
             Hola,
           </p>
-          <h1 className="text-lg font-medium text-foreground">{user.name.split(" ")[0]}</h1>
+          <h1 className="text-lg font-medium text-foreground md:text-2xl">{user.name.split(" ")[0]}</h1>
         </div>
         <Link
           to="/profile"
@@ -97,15 +97,16 @@ function Dashboard() {
         </Link>
       </header>
 
+      <div className="md:grid md:grid-cols-2 md:items-start md:gap-4 lg:grid-cols-3">
       {/* Available card */}
       <section
-        className="mb-4 rounded-2xl p-5"
+        className="mb-4 rounded-2xl p-5 md:col-span-2 md:mb-0 md:p-6 lg:col-span-3"
         style={{ backgroundColor: "var(--card)" }}
       >
         <p className="text-xs uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
           Disponible {period.label}
         </p>
-        <p className="mt-2 text-[32px] font-medium leading-none text-foreground">
+        <p className="mt-2 text-[32px] font-medium leading-none text-foreground md:text-[40px]">
           {formatMXN(available)}
         </p>
         <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full" style={{ backgroundColor: "var(--card-elevated)" }}>
@@ -121,14 +122,14 @@ function Dashboard() {
       </section>
 
       {/* Two small cards */}
-      <section className="mb-4 grid grid-cols-2 gap-3">
+      <section className="mb-4 grid grid-cols-2 gap-3 md:col-span-2 md:mb-0 lg:col-span-1 lg:grid-cols-1">
         <MiniStat label="Gastos fijos" value={totalFixed} />
         <MiniStat label="Gastos variables" value={totalVariable} />
       </section>
 
       <Link
         to="/calendar"
-        className="mb-4 flex items-center gap-3 rounded-2xl p-4"
+        className="mb-4 flex items-center gap-3 rounded-2xl p-4 md:col-span-2 md:mb-0 lg:col-span-3"
         style={{ backgroundColor: "var(--card)" }}
       >
         <CalendarDays size={20} color="#1D9E75" strokeWidth={1.75} />
@@ -143,7 +144,7 @@ function Dashboard() {
 
       {/* Category donut */}
       <section
-        className="mb-4 rounded-2xl p-5"
+        className="mb-4 rounded-2xl p-5 md:mb-0 md:p-6 lg:col-span-1"
         style={{ backgroundColor: "var(--card)" }}
       >
         <div className="mb-4 flex items-center justify-between">
@@ -156,7 +157,7 @@ function Dashboard() {
           <EmptyLine>Aún no tienes gastos este período</EmptyLine>
         ) : (
           <div className="flex items-center gap-4">
-            <div className="h-32 w-32 shrink-0">
+            <div className="h-32 w-32 shrink-0 md:h-40 md:w-40">
               <ResponsiveContainer>
                 <PieChart>
                   <Pie
@@ -194,7 +195,7 @@ function Dashboard() {
 
       {/* Recent movements */}
       <section
-        className="rounded-2xl p-5"
+        className="rounded-2xl p-5 md:p-6 lg:col-span-2"
         style={{ backgroundColor: "var(--card)" }}
       >
         <div className="mb-3 flex items-center justify-between">
@@ -232,6 +233,7 @@ function Dashboard() {
           </ul>
         )}
       </section>
+      </div>
     </AppShell>
   );
 }
