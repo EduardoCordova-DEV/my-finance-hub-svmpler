@@ -179,7 +179,11 @@ function CategoriesPage() {
             className="flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-medium"
             style={{ backgroundColor: "var(--card-elevated)", color: "#1D9E75" }}
           >
-            <Plus size={16} /> Agregar
+            {editingFixedId ? "Guardar cambios" : (
+              <>
+                <Plus size={16} /> Agregar
+              </>
+            )}
           </button>
           <input
             inputMode="decimal"
@@ -190,6 +194,17 @@ function CategoriesPage() {
             style={{ backgroundColor: "var(--card-elevated)" }}
           />
         </div>
+
+        {editingFixedId ? (
+          <button
+            type="button"
+            onClick={resetForm}
+            className="w-full rounded-xl py-2 text-xs"
+            style={{ color: "var(--muted-foreground)" }}
+          >
+            Cancelar edición
+          </button>
+        ) : null}
       </div>
 
       <ul className="mt-4 space-y-2">
@@ -197,16 +212,45 @@ function CategoriesPage() {
           <li
             key={f.id}
             className="flex items-center gap-3 rounded-2xl px-3 py-2.5"
-            style={{ backgroundColor: "var(--card)" }}
+            style={{
+              backgroundColor: "var(--card)",
+              outline: editingFixedId === f.id ? "1px solid #1D9E75" : undefined,
+            }}
           >
             <CategoryIcon category={f.category} />
-            <div className="min-w-0 flex-1">
+            <button
+              type="button"
+              onClick={() => {
+                startEdit(f);
+                document.getElementById("form-gasto-fijo")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              className="min-w-0 flex-1 text-left"
+            >
               <p className="truncate text-sm text-foreground">{f.name}</p>
               <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
                 {formatMXN(f.amount)}
               </p>
-            </div>
-            <button type="button" onClick={() => remove(f.id)} aria-label="Eliminar" className="p-1.5">
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                startEdit(f);
+                document.getElementById("form-gasto-fijo")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              aria-label={`Editar ${f.name}`}
+              className="p-1.5"
+            >
+              <Pencil size={16} color="#7A7A74" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (editingFixedId === f.id) resetForm();
+                remove(f.id);
+              }}
+              aria-label="Eliminar"
+              className="p-1.5"
+            >
               <Trash2 size={16} color="#7A7A74" />
             </button>
           </li>
