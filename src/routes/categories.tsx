@@ -122,7 +122,14 @@ function CategoriesPage() {
         Total: <span className="text-foreground">{formatMXN(total)}</span>
       </p>
 
-      <div className="mt-4 space-y-3 rounded-2xl p-3" style={{ backgroundColor: "var(--card)" }}>
+      <div
+        id="form-gasto-fijo"
+        className="mt-4 space-y-3 rounded-2xl p-3 scroll-mt-4"
+        style={{ backgroundColor: "var(--card)" }}
+      >
+        <p className="text-xs uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
+          {editingFixedId ? "Editar gasto fijo" : "Nuevo gasto fijo"}
+        </p>
         <input
           placeholder="Nombre"
           value={name}
