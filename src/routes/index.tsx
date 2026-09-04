@@ -76,7 +76,7 @@ function Dashboard() {
     .join("")
     .toUpperCase();
 
-  const recent = transactions.slice(0, 6);
+  const recent = transactions;
 
   return (
     <AppShell wide>
