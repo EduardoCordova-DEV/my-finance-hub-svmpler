@@ -76,7 +76,7 @@ function Dashboard() {
     .join("")
     .toUpperCase();
 
-  const recent = transactions.slice(0, 6);
+  const recent = transactions;
 
   return (
     <AppShell wide>
@@ -211,7 +211,7 @@ function Dashboard() {
         {recent.length === 0 ? (
           <EmptyLine>Aún no tienes movimientos este período</EmptyLine>
         ) : (
-          <ul className="space-y-3">
+          <ul className="max-h-[320px] space-y-3 overflow-y-auto pr-1 md:max-h-[360px]">
             {recent.map((t) => (
               <li key={t.id} className="flex items-center gap-3">
                 <CategoryIcon category={t.category} />
