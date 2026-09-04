@@ -123,7 +123,7 @@ function Dashboard() {
 
       {/* Two small cards */}
       <section className="mb-4 grid grid-cols-2 gap-3 md:col-span-2 md:mb-0 lg:col-span-1 lg:grid-cols-1">
-        <MiniStat label="Gastos fijos" value={totalFixed} />
+        <MiniStat label="Gastos fijos" value={totalFixed} to="/categories" />
         <MiniStat label="Gastos variables" value={totalVariable} />
       </section>
 
@@ -238,13 +238,32 @@ function Dashboard() {
   );
 }
 
-function MiniStat({ label, value }: { label: string; value: number }) {
+function MiniStat({ label, value, to }: { label: string; value: number; to?: "/categories" }) {
+  const inner = (
+    <>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+          {label}
+        </p>
+        {to ? <ChevronRight size={14} color="#7A7A74" /> : null}
+      </div>
+      <p className="mt-1.5 text-lg font-medium text-foreground">{formatMXN(value)}</p>
+    </>
+  );
+  if (to) {
+    return (
+      <Link
+        to={to}
+        className="block rounded-2xl p-4 transition-opacity active:opacity-80"
+        style={{ backgroundColor: "var(--card)" }}
+      >
+        {inner}
+      </Link>
+    );
+  }
   return (
     <div className="rounded-2xl p-4" style={{ backgroundColor: "var(--card)" }}>
-      <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-        {label}
-      </p>
-      <p className="mt-1.5 text-lg font-medium text-foreground">{formatMXN(value)}</p>
+      {inner}
     </div>
   );
 }
