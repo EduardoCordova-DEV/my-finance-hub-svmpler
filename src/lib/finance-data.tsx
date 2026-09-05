@@ -121,6 +121,23 @@ export interface UserProfile {
   email: string;
   income: number;
   period: PeriodType;
+  /** Meta de ahorro por período (quincenal o mensual). */
+  savingsTarget: number;
+}
+
+export interface SavingsGoal {
+  id: string;
+  name: string;
+  target: number;
+  color: string;
+  icon: IconKey;
+}
+
+export interface SavingsContribution {
+  id: string;
+  goalId: string;
+  amount: number;
+  date: string; // ISO
 }
 
 interface FinanceState {
@@ -129,6 +146,9 @@ interface FinanceState {
   transactions: Transaction[];
   categories: CategoryDef[];
   categoryMap: Record<CategoryKey, CategoryDef>;
+  savingsGoals: SavingsGoal[];
+  savingsContributions: SavingsContribution[];
+  savedForGoal: (goalId: string) => number;
   getCategory: (key: CategoryKey) => CategoryDef;
   addCategory: (c: { name: string; color: string; icon: IconKey }) => CategoryKey;
   updateCategory: (key: CategoryKey, c: { name: string; color: string; icon: IconKey }) => void;
@@ -136,6 +156,11 @@ interface FinanceState {
   setUser: (u: Partial<UserProfile>) => void;
   setFixedExpenses: (list: FixedExpense[]) => void;
   addTransaction: (t: Omit<Transaction, "id" | "date"> & { date?: string }) => void;
+  addGoal: (g: Omit<SavingsGoal, "id">) => string;
+  updateGoal: (id: string, g: Omit<SavingsGoal, "id">) => void;
+  deleteGoal: (id: string) => void;
+  addContribution: (goalId: string, amount: number, date?: string) => void;
+  deleteContribution: (id: string) => void;
 }
 
 const initialFixed: FixedExpense[] = [
