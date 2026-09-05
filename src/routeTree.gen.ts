@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SavingsRouteImport } from './routes/savings'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as CategoriesRouteImport } from './routes/categories'
@@ -28,6 +29,11 @@ const WelcomeRoute = WelcomeRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavingsRoute = SavingsRouteImport.update({
+  id: '/savings',
+  path: '/savings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/categories': typeof CategoriesRoute
   '/history': typeof HistoryRoute
   '/profile': typeof ProfileRoute
+  '/savings': typeof SavingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/welcome': typeof WelcomeRoute
   '/onboarding/expenses': typeof OnboardingExpensesRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/categories': typeof CategoriesRoute
   '/history': typeof HistoryRoute
   '/profile': typeof ProfileRoute
+  '/savings': typeof SavingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/welcome': typeof WelcomeRoute
   '/onboarding/expenses': typeof OnboardingExpensesRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/categories': typeof CategoriesRoute
   '/history': typeof HistoryRoute
   '/profile': typeof ProfileRoute
+  '/savings': typeof SavingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/welcome': typeof WelcomeRoute
   '/onboarding/expenses': typeof OnboardingExpensesRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/history'
     | '/profile'
+    | '/savings'
     | '/sitemap.xml'
     | '/welcome'
     | '/onboarding/expenses'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/history'
     | '/profile'
+    | '/savings'
     | '/sitemap.xml'
     | '/welcome'
     | '/onboarding/expenses'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/history'
     | '/profile'
+    | '/savings'
     | '/sitemap.xml'
     | '/welcome'
     | '/onboarding/expenses'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   CategoriesRoute: typeof CategoriesRoute
   HistoryRoute: typeof HistoryRoute
   ProfileRoute: typeof ProfileRoute
+  SavingsRoute: typeof SavingsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   WelcomeRoute: typeof WelcomeRoute
   OnboardingExpensesRoute: typeof OnboardingExpensesRoute
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/savings': {
+      id: '/savings'
+      path: '/savings'
+      fullPath: '/savings'
+      preLoaderRoute: typeof SavingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -242,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   CategoriesRoute: CategoriesRoute,
   HistoryRoute: HistoryRoute,
   ProfileRoute: ProfileRoute,
+  SavingsRoute: SavingsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   WelcomeRoute: WelcomeRoute,
   OnboardingExpensesRoute: OnboardingExpensesRoute,
