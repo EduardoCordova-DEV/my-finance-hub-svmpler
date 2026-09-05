@@ -181,13 +181,9 @@ function SavingsPage() {
                           {formatMXN(saved)} de {formatMXN(g.target)}
                         </p>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setContribFor(g)}
-                        className="rounded-full bg-white px-3 py-1.5 text-xs font-medium text-black"
-                      >
-                        Abonar
-                      </button>
+                      <span className="shrink-0 text-xs" style={{ color: "var(--muted-foreground)" }}>
+                        {p}%
+                      </span>
                       <button
                         type="button"
                         aria-label={`Editar ${g.name}`}
