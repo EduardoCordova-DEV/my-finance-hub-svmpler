@@ -65,6 +65,7 @@ const SIDE_TABS: TabDef[] = [
   { to: "/history", label: "Historial", Icon: List },
   { to: "/calendar", label: "Calendario", Icon: CalendarDays },
   { to: "/categories", label: "Gastos Fijos", Icon: LayoutGrid },
+  { to: "/savings", label: "Ahorros", Icon: PiggyBank },
   { to: "/profile", label: "Perfil", Icon: User },
 ];
 
