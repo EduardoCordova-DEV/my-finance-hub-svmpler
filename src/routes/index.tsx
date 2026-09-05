@@ -127,6 +127,36 @@ function Dashboard() {
         <MiniStat label="Gastos variables" value={totalVariable} />
       </section>
 
+      {/* Ahorros del período */}
+      <Link
+        to="/savings"
+        className="mb-4 block rounded-2xl p-5 md:col-span-2 md:mb-0 md:p-6 lg:col-span-3"
+        style={{ backgroundColor: "var(--card)" }}
+      >
+        <div className="flex items-center gap-3">
+          <PiggyBank size={20} color="#5DCAA5" strokeWidth={1.75} />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm text-foreground">Ahorros {period.label}</p>
+            <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+              {formatMXN(savedThisPeriod)} de {formatMXN(user.savingsTarget)}
+            </p>
+          </div>
+          <ChevronRight size={16} color="#7A7A74" />
+        </div>
+        <div
+          className="mt-4 h-1.5 w-full overflow-hidden rounded-full"
+          style={{ backgroundColor: "var(--card-elevated)" }}
+        >
+          <div
+            className="h-full rounded-full transition-all"
+            style={{ width: `${savingsPct}%`, backgroundColor: savingsColor }}
+          />
+        </div>
+        <p className="mt-2 text-xs" style={{ color: "var(--muted-foreground)" }}>
+          {savingsPct}% de tu meta de ahorro
+        </p>
+      </Link>
+
       <Link
         to="/calendar"
         className="mb-4 flex items-center gap-3 rounded-2xl p-4 md:col-span-2 md:mb-0 lg:col-span-3"
