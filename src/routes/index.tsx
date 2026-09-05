@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, CalendarDays } from "lucide-react";
+import { ChevronRight, CalendarDays, PiggyBank } from "lucide-react";
 import { AppShell } from "@/components/finance/AppShell";
 import { CategoryIcon } from "@/components/finance/CategoryIcon";
 import {
@@ -30,8 +30,20 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const { user, fixedExpenses, transactions, getCategory } = useFinance();
+  const { user, fixedExpenses, transactions, getCategory, savingsContributions } = useFinance();
   const period = periodInfo(user.period);
+
+  const savedThisPeriod = savingsContributions
+    .filter((c) => {
+      const d = new Date(c.date);
+      return d >= period.start && d <= new Date(period.end.getTime() + 86399000);
+    })
+    .reduce((s, c) => s + c.amount, 0);
+  const savingsPct =
+    user.savingsTarget > 0
+      ? Math.min(100, Math.round((savedThisPeriod / user.savingsTarget) * 100))
+      : 0;
+  const savingsColor = savingsPct >= 100 ? "#1D9E75" : savingsPct >= 50 ? "#5DCAA5" : "#EF9F27";
 
   const totalFixed = fixedExpenses.reduce((s, f) => s + f.amount, 0);
   const variableTx = transactions.filter((t) => t.type === "gasto");
