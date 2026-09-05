@@ -255,6 +255,35 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       transactions,
       categories,
       categoryMap,
+      savingsGoals,
+      savingsContributions,
+      savedForGoal: (goalId) =>
+        savingsContributions
+          .filter((c) => c.goalId === goalId)
+          .reduce((s, c) => s + c.amount, 0),
+      addGoal: (g) => {
+        const id = Math.random().toString(36).slice(2);
+        setSavingsGoals((prev) => [...prev, { id, ...g }]);
+        return id;
+      },
+      updateGoal: (id, g) =>
+        setSavingsGoals((prev) => prev.map((x) => (x.id === id ? { id, ...g } : x))),
+      deleteGoal: (id) => {
+        setSavingsGoals((prev) => prev.filter((x) => x.id !== id));
+        setSavingsContributions((prev) => prev.filter((c) => c.goalId !== id));
+      },
+      addContribution: (goalId, amount, date) =>
+        setSavingsContributions((prev) => [
+          {
+            id: Math.random().toString(36).slice(2),
+            goalId,
+            amount,
+            date: date ?? new Date().toISOString(),
+          },
+          ...prev,
+        ]),
+      deleteContribution: (id) =>
+        setSavingsContributions((prev) => prev.filter((c) => c.id !== id)),
       getCategory: (key) => categoryMap[key] ?? fallback,
       addCategory: ({ name, color, icon }) => {
         const base = slugify(name);
