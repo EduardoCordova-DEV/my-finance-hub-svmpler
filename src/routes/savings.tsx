@@ -44,7 +44,7 @@ export const Route = createFileRoute("/savings")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: SavingsPage;
+  component: SavingsPage,
 });
 
 function SavingsPage() {
