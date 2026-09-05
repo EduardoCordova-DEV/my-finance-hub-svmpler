@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, CalendarDays } from "lucide-react";
+import { ChevronRight, CalendarDays, PiggyBank } from "lucide-react";
 import { AppShell } from "@/components/finance/AppShell";
 import { CategoryIcon } from "@/components/finance/CategoryIcon";
 import {
@@ -30,8 +30,20 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const { user, fixedExpenses, transactions, getCategory } = useFinance();
+  const { user, fixedExpenses, transactions, getCategory, savingsContributions } = useFinance();
   const period = periodInfo(user.period);
+
+  const savedThisPeriod = savingsContributions
+    .filter((c) => {
+      const d = new Date(c.date);
+      return d >= period.start && d <= new Date(period.end.getTime() + 86399000);
+    })
+    .reduce((s, c) => s + c.amount, 0);
+  const savingsPct =
+    user.savingsTarget > 0
+      ? Math.min(100, Math.round((savedThisPeriod / user.savingsTarget) * 100))
+      : 0;
+  const savingsColor = savingsPct >= 100 ? "#1D9E75" : savingsPct >= 50 ? "#5DCAA5" : "#EF9F27";
 
   const totalFixed = fixedExpenses.reduce((s, f) => s + f.amount, 0);
   const variableTx = transactions.filter((t) => t.type === "gasto");
@@ -126,6 +138,36 @@ function Dashboard() {
         <MiniStat label="Gastos fijos" value={totalFixed} to="/categories" />
         <MiniStat label="Gastos variables" value={totalVariable} />
       </section>
+
+      {/* Ahorros del período */}
+      <Link
+        to="/savings"
+        className="mb-4 block rounded-2xl p-5 md:col-span-2 md:mb-0 md:p-6 lg:col-span-3"
+        style={{ backgroundColor: "var(--card)" }}
+      >
+        <div className="flex items-center gap-3">
+          <PiggyBank size={20} color="#5DCAA5" strokeWidth={1.75} />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm text-foreground">Ahorros {period.label}</p>
+            <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+              {formatMXN(savedThisPeriod)} de {formatMXN(user.savingsTarget)}
+            </p>
+          </div>
+          <ChevronRight size={16} color="#7A7A74" />
+        </div>
+        <div
+          className="mt-4 h-1.5 w-full overflow-hidden rounded-full"
+          style={{ backgroundColor: "var(--card-elevated)" }}
+        >
+          <div
+            className="h-full rounded-full transition-all"
+            style={{ width: `${savingsPct}%`, backgroundColor: savingsColor }}
+          />
+        </div>
+        <p className="mt-2 text-xs" style={{ color: "var(--muted-foreground)" }}>
+          {savingsPct}% de tu meta de ahorro
+        </p>
+      </Link>
 
       <Link
         to="/calendar"

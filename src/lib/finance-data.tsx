@@ -121,6 +121,23 @@ export interface UserProfile {
   email: string;
   income: number;
   period: PeriodType;
+  /** Meta de ahorro por período (quincenal o mensual). */
+  savingsTarget: number;
+}
+
+export interface SavingsGoal {
+  id: string;
+  name: string;
+  target: number;
+  color: string;
+  icon: IconKey;
+}
+
+export interface SavingsContribution {
+  id: string;
+  goalId: string;
+  amount: number;
+  date: string; // ISO
 }
 
 interface FinanceState {
@@ -129,6 +146,9 @@ interface FinanceState {
   transactions: Transaction[];
   categories: CategoryDef[];
   categoryMap: Record<CategoryKey, CategoryDef>;
+  savingsGoals: SavingsGoal[];
+  savingsContributions: SavingsContribution[];
+  savedForGoal: (goalId: string) => number;
   getCategory: (key: CategoryKey) => CategoryDef;
   addCategory: (c: { name: string; color: string; icon: IconKey }) => CategoryKey;
   updateCategory: (key: CategoryKey, c: { name: string; color: string; icon: IconKey }) => void;
@@ -136,6 +156,11 @@ interface FinanceState {
   setUser: (u: Partial<UserProfile>) => void;
   setFixedExpenses: (list: FixedExpense[]) => void;
   addTransaction: (t: Omit<Transaction, "id" | "date"> & { date?: string }) => void;
+  addGoal: (g: Omit<SavingsGoal, "id">) => string;
+  updateGoal: (id: string, g: Omit<SavingsGoal, "id">) => void;
+  deleteGoal: (id: string) => void;
+  addContribution: (goalId: string, amount: number, date?: string) => void;
+  deleteContribution: (id: string) => void;
 }
 
 const initialFixed: FixedExpense[] = [
@@ -177,6 +202,18 @@ const initialTx: Transaction[] = [
   { id: "p9", type: "gasto", name: "Internet", category: "servicios", amount: 499, date: today(73) },
 ];
 
+const initialGoals: SavingsGoal[] = [
+  { id: "g1", name: "Fondo de emergencia", target: 25000, color: "#5DCAA5", icon: "ahorro" },
+  { id: "g2", name: "Viaje a la playa", target: 12000, color: "#4FA8E8", icon: "viajes" },
+];
+
+const initialContributions: SavingsContribution[] = [
+  { id: "c1", goalId: "g1", amount: 1500, date: today(2) },
+  { id: "c2", goalId: "g1", amount: 2000, date: today(31) },
+  { id: "c3", goalId: "g2", amount: 800, date: today(5) },
+  { id: "c4", goalId: "g2", amount: 1200, date: today(40) },
+];
+
 const FinanceCtx = createContext<FinanceState | null>(null);
 
 function slugify(name: string) {
@@ -196,10 +233,14 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     email: "alex@ejemplo.com",
     income: 8500,
     period: "quincenal",
+    savingsTarget: 1000,
   });
   const [fixedExpenses, setFixedExpenses] = useState<FixedExpense[]>(initialFixed);
   const [transactions, setTransactions] = useState<Transaction[]>(initialTx);
   const [categories, setCategories] = useState<CategoryDef[]>(DEFAULT_CATEGORIES);
+  const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(initialGoals);
+  const [savingsContributions, setSavingsContributions] =
+    useState<SavingsContribution[]>(initialContributions);
 
   const value = useMemo<FinanceState>(() => {
     const categoryMap = Object.fromEntries(categories.map((c) => [c.key, c])) as Record<
@@ -214,6 +255,35 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       transactions,
       categories,
       categoryMap,
+      savingsGoals,
+      savingsContributions,
+      savedForGoal: (goalId) =>
+        savingsContributions
+          .filter((c) => c.goalId === goalId)
+          .reduce((s, c) => s + c.amount, 0),
+      addGoal: (g) => {
+        const id = Math.random().toString(36).slice(2);
+        setSavingsGoals((prev) => [...prev, { id, ...g }]);
+        return id;
+      },
+      updateGoal: (id, g) =>
+        setSavingsGoals((prev) => prev.map((x) => (x.id === id ? { id, ...g } : x))),
+      deleteGoal: (id) => {
+        setSavingsGoals((prev) => prev.filter((x) => x.id !== id));
+        setSavingsContributions((prev) => prev.filter((c) => c.goalId !== id));
+      },
+      addContribution: (goalId, amount, date) =>
+        setSavingsContributions((prev) => [
+          {
+            id: Math.random().toString(36).slice(2),
+            goalId,
+            amount,
+            date: date ?? new Date().toISOString(),
+          },
+          ...prev,
+        ]),
+      deleteContribution: (id) =>
+        setSavingsContributions((prev) => prev.filter((c) => c.id !== id)),
       getCategory: (key) => categoryMap[key] ?? fallback,
       addCategory: ({ name, color, icon }) => {
         const base = slugify(name);
@@ -249,7 +319,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
           ...prev,
         ]),
     };
-  }, [user, fixedExpenses, transactions, categories]);
+  }, [user, fixedExpenses, transactions, categories, savingsGoals, savingsContributions]);
 
   return <FinanceCtx.Provider value={value}>{children}</FinanceCtx.Provider>;
 }

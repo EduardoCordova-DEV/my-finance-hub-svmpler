@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, List, Plus, LayoutGrid, User, CalendarDays } from "lucide-react";
+import { Home, List, Plus, LayoutGrid, User, CalendarDays, PiggyBank } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface TabDef {
@@ -65,6 +65,7 @@ const SIDE_TABS: TabDef[] = [
   { to: "/history", label: "Historial", Icon: List },
   { to: "/calendar", label: "Calendario", Icon: CalendarDays },
   { to: "/categories", label: "Gastos Fijos", Icon: LayoutGrid },
+  { to: "/savings", label: "Ahorros", Icon: PiggyBank },
   { to: "/profile", label: "Perfil", Icon: User },
 ];
 
