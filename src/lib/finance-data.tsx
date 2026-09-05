@@ -221,10 +221,14 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     email: "alex@ejemplo.com",
     income: 8500,
     period: "quincenal",
+    savingsTarget: 1000,
   });
   const [fixedExpenses, setFixedExpenses] = useState<FixedExpense[]>(initialFixed);
   const [transactions, setTransactions] = useState<Transaction[]>(initialTx);
   const [categories, setCategories] = useState<CategoryDef[]>(DEFAULT_CATEGORIES);
+  const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(initialGoals);
+  const [savingsContributions, setSavingsContributions] =
+    useState<SavingsContribution[]>(initialContributions);
 
   const value = useMemo<FinanceState>(() => {
     const categoryMap = Object.fromEntries(categories.map((c) => [c.key, c])) as Record<
