@@ -319,7 +319,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
           ...prev,
         ]),
     };
-  }, [user, fixedExpenses, transactions, categories]);
+  }, [user, fixedExpenses, transactions, categories, savingsGoals, savingsContributions]);
 
   return <FinanceCtx.Provider value={value}>{children}</FinanceCtx.Provider>;
 }
