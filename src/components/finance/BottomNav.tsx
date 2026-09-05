@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, List, Plus, LayoutGrid, User, CalendarDays } from "lucide-react";
+import { Home, List, Plus, LayoutGrid, User, CalendarDays, PiggyBank } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface TabDef {
