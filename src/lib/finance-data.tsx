@@ -202,6 +202,18 @@ const initialTx: Transaction[] = [
   { id: "p9", type: "gasto", name: "Internet", category: "servicios", amount: 499, date: today(73) },
 ];
 
+const initialGoals: SavingsGoal[] = [
+  { id: "g1", name: "Fondo de emergencia", target: 25000, color: "#5DCAA5", icon: "ahorro" },
+  { id: "g2", name: "Viaje a la playa", target: 12000, color: "#4FA8E8", icon: "viajes" },
+];
+
+const initialContributions: SavingsContribution[] = [
+  { id: "c1", goalId: "g1", amount: 1500, date: today(2) },
+  { id: "c2", goalId: "g1", amount: 2000, date: today(31) },
+  { id: "c3", goalId: "g2", amount: 800, date: today(5) },
+  { id: "c4", goalId: "g2", amount: 1200, date: today(40) },
+];
+
 const FinanceCtx = createContext<FinanceState | null>(null);
 
 function slugify(name: string) {
