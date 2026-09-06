@@ -213,6 +213,13 @@ function SavingsPage() {
                         style={{ width: `${p}%`, backgroundColor: g.color }}
                       />
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => setContribFor(g)}
+                      className="mt-3 w-full rounded-full bg-white py-2 text-xs font-medium text-black transition-opacity active:opacity-80"
+                    >
+                      Abonar
+                    </button>
                   </li>
                 );
               })}
