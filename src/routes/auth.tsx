@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail } from "lucide-react";
+import { useAuth } from "@/lib/local-auth";
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -14,14 +16,37 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { session, ready, signIn, signUp, signInWithProvider, isOnboarded } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  // Si ya hay sesión guardada, no mostramos el login.
+  useEffect(() => {
+    if (ready && session) navigate({ to: "/", replace: true });
+  }, [ready, session, navigate]);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    navigate({ to: mode === "signup" ? "/welcome" : "/" });
+    setError(null);
+    if (mode === "signup") {
+      const res = signUp(email, password);
+      if (!res.ok) return setError(res.error ?? "No se pudo crear la cuenta.");
+      navigate({ to: "/welcome" });
+      return;
+    }
+    const res = signIn(email, password);
+    if (!res.ok) return setError(res.error ?? "No se pudo iniciar sesión.");
+    navigate({ to: isOnboarded() ? "/" : "/welcome" });
   }
+
+  function social(provider: "google" | "outlook") {
+    setError(null);
+    const res = signInWithProvider(provider);
+    navigate({ to: res.isNew ? "/welcome" : "/" });
+  }
+
 
   return (
     <div className="min-h-screen w-full bg-background">
@@ -46,12 +71,12 @@ function AuthPage() {
         <div className="mb-4 space-y-2">
           <SocialButton
             label="Continuar con Google"
-            onClick={() => navigate({ to: mode === "signup" ? "/welcome" : "/" })}
+            onClick={() => social("google")}
             icon={<GoogleIcon />}
           />
           <SocialButton
             label="Continuar con Outlook"
-            onClick={() => navigate({ to: mode === "signup" ? "/welcome" : "/" })}
+            onClick={() => social("outlook")}
             icon={<OutlookIcon />}
           />
         </div>
