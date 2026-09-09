@@ -16,14 +16,37 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { session, ready, signIn, signUp, signInWithProvider, isOnboarded } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  // Si ya hay sesión guardada, no mostramos el login.
+  useEffect(() => {
+    if (ready && session) navigate({ to: "/", replace: true });
+  }, [ready, session, navigate]);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    navigate({ to: mode === "signup" ? "/welcome" : "/" });
+    setError(null);
+    if (mode === "signup") {
+      const res = signUp(email, password);
+      if (!res.ok) return setError(res.error ?? "No se pudo crear la cuenta.");
+      navigate({ to: "/welcome" });
+      return;
+    }
+    const res = signIn(email, password);
+    if (!res.ok) return setError(res.error ?? "No se pudo iniciar sesión.");
+    navigate({ to: isOnboarded() ? "/" : "/welcome" });
   }
+
+  function social(provider: "google" | "outlook") {
+    setError(null);
+    const res = signInWithProvider(provider);
+    navigate({ to: res.isNew ? "/welcome" : "/" });
+  }
+
 
   return (
     <div className="min-h-screen w-full bg-background">
