@@ -1,4 +1,5 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useAuth } from "./local-auth";
 
 export type CategoryKey = string;
 
@@ -241,6 +242,68 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(initialGoals);
   const [savingsContributions, setSavingsContributions] =
     useState<SavingsContribution[]>(initialContributions);
+
+  const { session } = useAuth();
+  const storageKey = session ? `myfinance.data.${session.email}` : null;
+  const [hydratedKey, setHydratedKey] = useState<string | null>(null);
+
+  // Carga los datos guardados de la cuenta activa.
+  useEffect(() => {
+    if (!storageKey || !session) return;
+    let loaded = false;
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (raw) {
+        const d = JSON.parse(raw) as Partial<{
+          user: UserProfile;
+          fixedExpenses: FixedExpense[];
+          transactions: Transaction[];
+          categories: CategoryDef[];
+          savingsGoals: SavingsGoal[];
+          savingsContributions: SavingsContribution[];
+        }>;
+        if (d.user) setUserState({ ...d.user, name: session.name, email: session.email });
+        if (d.fixedExpenses) setFixedExpenses(d.fixedExpenses);
+        if (d.transactions) setTransactions(d.transactions);
+        if (d.categories?.length) setCategories(d.categories);
+        if (d.savingsGoals) setSavingsGoals(d.savingsGoals);
+        if (d.savingsContributions) setSavingsContributions(d.savingsContributions);
+        loaded = true;
+      }
+    } catch {
+      /* datos corruptos: se ignoran */
+    }
+    if (!loaded) {
+      setUserState((prev) => ({ ...prev, name: session.name, email: session.email }));
+    }
+    setHydratedKey(storageKey);
+  }, [storageKey, session]);
+
+  // Guarda cada cambio en el navegador.
+  useEffect(() => {
+    if (!storageKey || hydratedKey !== storageKey) return;
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        user,
+        fixedExpenses,
+        transactions,
+        categories,
+        savingsGoals,
+        savingsContributions,
+      }),
+    );
+  }, [
+    storageKey,
+    hydratedKey,
+    user,
+    fixedExpenses,
+    transactions,
+    categories,
+    savingsGoals,
+    savingsContributions,
+  ]);
+
 
   const value = useMemo<FinanceState>(() => {
     const categoryMap = Object.fromEntries(categories.map((c) => [c.key, c])) as Record<
