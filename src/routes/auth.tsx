@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail } from "lucide-react";
+import { useAuth } from "@/lib/local-auth";
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
