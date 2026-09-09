@@ -71,12 +71,12 @@ function AuthPage() {
         <div className="mb-4 space-y-2">
           <SocialButton
             label="Continuar con Google"
-            onClick={() => navigate({ to: mode === "signup" ? "/welcome" : "/" })}
+            onClick={() => social("google")}
             icon={<GoogleIcon />}
           />
           <SocialButton
             label="Continuar con Outlook"
-            onClick={() => navigate({ to: mode === "signup" ? "/welcome" : "/" })}
+            onClick={() => social("outlook")}
             icon={<OutlookIcon />}
           />
         </div>
